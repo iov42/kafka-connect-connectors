@@ -19,6 +19,6 @@ public interface RecordFormat {
     // Throws a MaxBufferSizeExceededException if the record will be larger than the given sizeLimit
     int writeRecord(final DataOutputStream dataOutputStream, SinkRecord record, int sizeLimit) throws MaxBufferSizeExceededException, IOException;
 
-    SourceRecord readRecord(final String singleRow, final Map<String, ?> sourcePartition, final Map<String, Object> sourceOffset, final String topic, final int partition) throws IOException;
+    SourceRecord readRecord(final String jsonRow, final Map<String, ?> sourcePartition, final Map<String, Object> sourceOffset, final String topic, final int partition) throws IOException;
 
 }
