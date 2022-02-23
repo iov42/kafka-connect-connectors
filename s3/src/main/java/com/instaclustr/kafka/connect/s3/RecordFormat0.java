@@ -54,8 +54,8 @@ public class RecordFormat0 implements RecordFormat {
             JsonObject jsonObject = jsonParser.parse(jsonRow).getAsJsonObject();
 
             if (jsonObject.isJsonObject()) {
-                byte[] key = (jsonObject.get("k").isJsonNull()) ? null : readAsObjectOrString(jsonObject, "k").getBytes();
-                byte[] value = (jsonObject.get("v").isJsonNull()) ? null : readAsObjectOrString(jsonObject, "v").getBytes();
+                byte[] key = (jsonObject.get("k").isJsonNull()) ? null : readAsObjectOrString(jsonObject, "k").getBytes(StandardCharsets.UTF_8);
+                byte[] value = (jsonObject.get("v").isJsonNull()) ? null : readAsObjectOrString(jsonObject, "v").getBytes(StandardCharsets.UTF_8);
                 long timestamp = jsonObject.get("t").getAsLong();
                 long offset = jsonObject.get("o").getAsLong();
 
