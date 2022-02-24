@@ -33,7 +33,7 @@ public class RecordFormat0 implements RecordFormat {
         String keyData = (record.key() == null || Arrays.equals(((byte[]) record.key()), "".getBytes())) ? null : (asUTF8String((byte[]) record.key()));
         String valueData = (record.value() == null || Arrays.equals(((byte[]) record.value()), "".getBytes())) ? null : (asUTF8String((byte[]) record.value()));
 
-        byte[] writableRecord = constructJson(new Record(keyData, valueData, record.timestamp(), record.kafkaOffset())).getBytes();
+        byte[] writableRecord = constructJson(new Record(keyData, valueData, record.timestamp(), record.kafkaOffset())).getBytes(StandardCharsets.UTF_8);
         int nextChunkSize = writableRecord.length + lineSeparatorBytes.length;
 
         if (nextChunkSize > sizeLimit) {
