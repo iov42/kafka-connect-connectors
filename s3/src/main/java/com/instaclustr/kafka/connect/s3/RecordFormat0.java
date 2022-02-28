@@ -17,11 +17,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
 
-
 public class RecordFormat0 implements RecordFormat {
     private static Logger logger = LoggerFactory.getLogger(RecordFormat0.class);
     private Gson gson = (new GsonBuilder()).serializeNulls().setLenient().create();
-    private JsonParser jsonParser = new JsonParser();
 
     private byte[] lineSeparatorBytes = System.lineSeparator().getBytes(StandardCharsets.UTF_8);
 
@@ -29,11 +27,15 @@ public class RecordFormat0 implements RecordFormat {
     }
 
     @Override
-    public int writeRecord(final DataOutputStream dataOutputStream, final SinkRecord record, int sizeLimit) throws MaxBufferSizeExceededException, IOException {
-        String keyData = (record.key() == null || Arrays.equals(((byte[]) record.key()), "".getBytes())) ? null : (asUTF8String((byte[]) record.key()));
-        String valueData = (record.value() == null || Arrays.equals(((byte[]) record.value()), "".getBytes())) ? null : (asUTF8String((byte[]) record.value()));
+    public int writeRecord(final DataOutputStream dataOutputStream, final SinkRecord record, int sizeLimit)
+            throws MaxBufferSizeExceededException, IOException {
+        String keyData = (record.key() == null || Arrays.equals(((byte[]) record.key()), "".getBytes())) ? null
+                : (asUTF8String((byte[]) record.key()));
+        String valueData = (record.value() == null || Arrays.equals(((byte[]) record.value()), "".getBytes())) ? null
+                : (asUTF8String((byte[]) record.value()));
 
-        byte[] writableRecord = constructJson(new Record(keyData, valueData, record.timestamp(), record.kafkaOffset())).getBytes(StandardCharsets.UTF_8);
+        byte[] writableRecord = constructJson(new Record(keyData, valueData, record.timestamp(), record.kafkaOffset()))
+                .getBytes(StandardCharsets.UTF_8);
         int nextChunkSize = writableRecord.length + lineSeparatorBytes.length;
 
         if (nextChunkSize > sizeLimit) {
@@ -48,19 +50,23 @@ public class RecordFormat0 implements RecordFormat {
 
     @Override
     public SourceRecord readRecord(final String jsonRow, final Map<String, ?> sourcePartition,
-                                   final Map<String, Object> sourceOffset, final String topic, final int partition) throws IOException, NumberFormatException {
+            final Map<String, Object> sourceOffset, final String topic, final int partition)
+            throws IOException, NumberFormatException {
 
         try {
-            JsonObject jsonObject = jsonParser.parse(jsonRow).getAsJsonObject();
+            JsonObject jsonObject = JsonParser.parseString(jsonRow).getAsJsonObject();
 
             if (jsonObject.isJsonObject()) {
-                byte[] key = (jsonObject.get("k").isJsonNull()) ? null : readAsObjectOrString(jsonObject, "k").getBytes(StandardCharsets.UTF_8);
-                byte[] value = (jsonObject.get("v").isJsonNull()) ? null : readAsObjectOrString(jsonObject, "v").getBytes(StandardCharsets.UTF_8);
+                byte[] key = (jsonObject.get("k").isJsonNull()) ? null
+                        : readAsObjectOrString(jsonObject, "k").getBytes(StandardCharsets.UTF_8);
+                byte[] value = (jsonObject.get("v").isJsonNull()) ? null
+                        : readAsObjectOrString(jsonObject, "v").getBytes(StandardCharsets.UTF_8);
                 long timestamp = jsonObject.get("t").getAsLong();
                 long offset = jsonObject.get("o").getAsLong();
 
                 sourceOffset.put("lastReadOffset", offset);
-                return new SourceRecord(sourcePartition, sourceOffset, topic, partition, Schema.BYTES_SCHEMA, key, Schema.BYTES_SCHEMA, value, timestamp);
+                return new SourceRecord(sourcePartition, sourceOffset, topic, partition, Schema.BYTES_SCHEMA, key,
+                        Schema.BYTES_SCHEMA, value, timestamp);
             } else {
                 logger.error("Did not receive a json object " + jsonRow);
                 throw new IOException("Did not receive a json object " + jsonRow);
