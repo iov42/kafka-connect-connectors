@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class TransferManagerProvider {
     private TransferManager transferManager;
@@ -28,8 +27,7 @@ public class TransferManagerProvider {
         AmazonS3ClientBuilder clientBuilder = getS3ClientBuilderWithRegionAndCredentials(config)
                 .withClientConfiguration(new ClientConfiguration()
                         .withMaxErrorRetry(5)
-                        .withTcpKeepAlive(true)
-                );
+                        .withTcpKeepAlive(true));
         transferManager = TransferManagerBuilder.standard().withS3Client(clientBuilder.build()).build();
     }
 
@@ -39,7 +37,8 @@ public class TransferManagerProvider {
         String region = getFromConfigOrEnvironment(config, AwsStorageConnectorCommonConfig.AWS_REGION);
         String roleArn = getFromConfigOrEnvironment(config, AwsStorageConnectorCommonConfig.AWS_IAM_ROLE_ARN);
 
-        AWSStaticCredentialsProvider awsStaticCredentialsProvider = new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secret));
+        AWSStaticCredentialsProvider awsStaticCredentialsProvider = new AWSStaticCredentialsProvider(
+                new BasicAWSCredentials(accessKey, secret));
         AWSCredentialsProvider awsCredentialsProvider;
 
         if (StringUtils.isBlank(roleArn)) {
@@ -51,10 +50,9 @@ public class TransferManagerProvider {
                     .withCredentials(awsStaticCredentialsProvider)
                     .build();
 
-            STSAssumeRoleSessionCredentialsProvider.Builder assumeRoleBuilder =
-                    new STSAssumeRoleSessionCredentialsProvider.Builder(
-                            roleArn,
-                            UUID.randomUUID().toString().substring(0, 32));
+            STSAssumeRoleSessionCredentialsProvider.Builder assumeRoleBuilder = new STSAssumeRoleSessionCredentialsProvider.Builder(
+                    roleArn,
+                    UUID.randomUUID().toString().substring(0, 32));
 
             awsCredentialsProvider = assumeRoleBuilder
                     .withStsClient(awsSecurityTokenService)
@@ -67,9 +65,10 @@ public class TransferManagerProvider {
         if (region == null) {
             region = AwsStorageConnectorCommonConfig.DEFAULT_AWS_REGION;
             clientBuilder.enableForceGlobalBucketAccess();
-            log.info("No region defined. Using {} and force global bucket access", AwsStorageConnectorCommonConfig.DEFAULT_AWS_REGION);
+            log.info("No region defined. Using {} and force global bucket access",
+                    AwsStorageConnectorCommonConfig.DEFAULT_AWS_REGION);
         }
-        clientBuilder.withRegion(Regions.fromName(region).getName()); //using fromName to validate the region value
+        clientBuilder.withRegion(Regions.fromName(region).getName()); // using fromName to validate the region value
         return clientBuilder;
     }
 

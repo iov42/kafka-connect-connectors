@@ -17,16 +17,18 @@ public class TopicPartitionSegmentParserTest {
     String s3ObjectKey = "prefix/test/0/0000000000000000002-0000000000000000004.txt";
 
     @Test
-    public void serDesIsWorkingForWeirdCharacters() throws Exception{
+    public void serDesIsWorkingForWeirdCharacters() throws Exception {
         TopicPartitionBuffer topicPartitionBuffer = new TopicPartitionBuffer("test", 0);
         byte[] key = "\"££:::::£`£\"".getBytes();
         byte[] value = "\"\n&\t&&&$مُنَاقَشَةُ سُبُلِ اِسَّْطْبِيقَاتُ الْحاسُوبِيَّة\"".getBytes();
 
-        SinkRecord record = new SinkRecord("test", 0, Schema.OPTIONAL_BYTES_SCHEMA, key, Schema.OPTIONAL_BYTES_SCHEMA, value, 2, 64L, TimestampType.NO_TIMESTAMP_TYPE);
+        SinkRecord record = new SinkRecord("test", 0, Schema.OPTIONAL_BYTES_SCHEMA, key, Schema.OPTIONAL_BYTES_SCHEMA,
+                value, 2, 64L, TimestampType.NO_TIMESTAMP_TYPE);
         topicPartitionBuffer.putRecord(record);
 
         InputStream dataInputStream = topicPartitionBuffer.getInputStream();
-        TopicPartitionSegmentParser topicPartitionSegmentParser = new TopicPartitionSegmentParser(dataInputStream, s3ObjectKey, "");
+        TopicPartitionSegmentParser topicPartitionSegmentParser = new TopicPartitionSegmentParser(dataInputStream,
+                s3ObjectKey, "");
 
         Assert.assertEquals(topicPartitionBuffer.topic, "test");
         Assert.assertEquals(topicPartitionBuffer.partition, 0);
@@ -46,11 +48,13 @@ public class TopicPartitionSegmentParserTest {
         byte[] key = "\"hFCBaHIxQh\"".getBytes();
         byte[] value = "{\"y\":\"22\"}".getBytes();
 
-        SinkRecord record = new SinkRecord("test", 0, Schema.OPTIONAL_BYTES_SCHEMA, key, Schema.OPTIONAL_BYTES_SCHEMA, value, 2, 64L, TimestampType.NO_TIMESTAMP_TYPE);
+        SinkRecord record = new SinkRecord("test", 0, Schema.OPTIONAL_BYTES_SCHEMA, key, Schema.OPTIONAL_BYTES_SCHEMA,
+                value, 2, 64L, TimestampType.NO_TIMESTAMP_TYPE);
         topicPartitionBuffer.putRecord(record);
 
         InputStream dataInputStream = topicPartitionBuffer.getInputStream();
-        TopicPartitionSegmentParser topicPartitionSegmentParser = new TopicPartitionSegmentParser(dataInputStream, s3ObjectKey, "");
+        TopicPartitionSegmentParser topicPartitionSegmentParser = new TopicPartitionSegmentParser(dataInputStream,
+                s3ObjectKey, "");
 
         Assert.assertEquals(topicPartitionBuffer.topic, "test");
         Assert.assertEquals(topicPartitionBuffer.partition, 0);
@@ -70,11 +74,13 @@ public class TopicPartitionSegmentParserTest {
         byte[] key = "{\"x\":\"epuWQMjIgP\"}".getBytes();
         byte[] value = "{\"y\":\"22\"}".getBytes();
 
-        SinkRecord record = new SinkRecord("test", 0, Schema.OPTIONAL_BYTES_SCHEMA, key, Schema.OPTIONAL_BYTES_SCHEMA, value, 2, 64L, TimestampType.NO_TIMESTAMP_TYPE);
+        SinkRecord record = new SinkRecord("test", 0, Schema.OPTIONAL_BYTES_SCHEMA, key, Schema.OPTIONAL_BYTES_SCHEMA,
+                value, 2, 64L, TimestampType.NO_TIMESTAMP_TYPE);
         topicPartitionBuffer.putRecord(record);
 
         InputStream dataInputStream = topicPartitionBuffer.getInputStream();
-        TopicPartitionSegmentParser topicPartitionSegmentParser = new TopicPartitionSegmentParser(dataInputStream, s3ObjectKey, "");
+        TopicPartitionSegmentParser topicPartitionSegmentParser = new TopicPartitionSegmentParser(dataInputStream,
+                s3ObjectKey, "");
 
         Assert.assertEquals(topicPartitionBuffer.topic, "test");
         Assert.assertEquals(topicPartitionBuffer.partition, 0);
@@ -94,14 +100,18 @@ public class TopicPartitionSegmentParserTest {
         byte[] key = "{\"x\":\"11\"}".getBytes();
         byte[] value = "{\"y\":\"22\"}".getBytes();
 
-        SinkRecord record1 = new SinkRecord("test", 0, Schema.OPTIONAL_BYTES_SCHEMA, null, Schema.OPTIONAL_BYTES_SCHEMA, null, 2, 64L, TimestampType.NO_TIMESTAMP_TYPE);
-        SinkRecord record2 = new SinkRecord("test", 0, Schema.OPTIONAL_BYTES_SCHEMA, "".getBytes(), Schema.OPTIONAL_BYTES_SCHEMA, "".getBytes(), 3, 68L, TimestampType.NO_TIMESTAMP_TYPE, null);
-        SinkRecord record3 = new SinkRecord("test", 0, Schema.OPTIONAL_BYTES_SCHEMA, key, Schema.OPTIONAL_BYTES_SCHEMA, value, 4, 72L, TimestampType.NO_TIMESTAMP_TYPE);
+        SinkRecord record1 = new SinkRecord("test", 0, Schema.OPTIONAL_BYTES_SCHEMA, null, Schema.OPTIONAL_BYTES_SCHEMA,
+                null, 2, 64L, TimestampType.NO_TIMESTAMP_TYPE);
+        SinkRecord record2 = new SinkRecord("test", 0, Schema.OPTIONAL_BYTES_SCHEMA, "".getBytes(),
+                Schema.OPTIONAL_BYTES_SCHEMA, "".getBytes(), 3, 68L, TimestampType.NO_TIMESTAMP_TYPE, null);
+        SinkRecord record3 = new SinkRecord("test", 0, Schema.OPTIONAL_BYTES_SCHEMA, key, Schema.OPTIONAL_BYTES_SCHEMA,
+                value, 4, 72L, TimestampType.NO_TIMESTAMP_TYPE);
         topicPartitionBuffer.putRecord(record1);
         topicPartitionBuffer.putRecord(record2);
         topicPartitionBuffer.putRecord(record3);
         InputStream dataInputStream = topicPartitionBuffer.getInputStream();
-        TopicPartitionSegmentParser topicPartitionSegmentParser = new TopicPartitionSegmentParser(dataInputStream, s3ObjectKey, "");
+        TopicPartitionSegmentParser topicPartitionSegmentParser = new TopicPartitionSegmentParser(dataInputStream,
+                s3ObjectKey, "");
 
         Assert.assertEquals(topicPartitionBuffer.topic, "test");
         Assert.assertEquals(topicPartitionBuffer.partition, 0);
@@ -114,13 +124,11 @@ public class TopicPartitionSegmentParserTest {
         Assert.assertNull(firstSourceRecord.value());
         Assert.assertEquals(firstSourceRecord.timestamp(), record1.timestamp());
 
-
         SourceRecord secondSourceRecord = topicPartitionSegmentParser.getNextRecord(5L, TimeUnit.SECONDS);
         Assert.assertEquals(secondSourceRecord.sourceOffset().get(LAST_READ_OFFSET), 3L);
         Assert.assertNull(firstSourceRecord.key());
         Assert.assertNull(firstSourceRecord.value());
         Assert.assertEquals(secondSourceRecord.timestamp(), record2.timestamp());
-
 
         SourceRecord thirdSourceRecord = topicPartitionSegmentParser.getNextRecord(1L, TimeUnit.SECONDS);
         Assert.assertEquals(thirdSourceRecord.sourceOffset().get(LAST_READ_OFFSET), 4L);
@@ -131,10 +139,9 @@ public class TopicPartitionSegmentParserTest {
 
     @Test
     public void givenNonResponsiveStreamRaiseIoException() throws Exception {
-        PipedOutputStream pipedOutputStream = null;
         try (PipedInputStream empty = new PipedInputStream(1)) {
-            pipedOutputStream = new PipedOutputStream(empty); //making sure we just have an unresponsive stream and not throwing an ioexception
-            TopicPartitionSegmentParser topicPartitionSegmentParser = new TopicPartitionSegmentParser(empty, s3ObjectKey, "");
+            TopicPartitionSegmentParser topicPartitionSegmentParser = new TopicPartitionSegmentParser(empty,
+                    s3ObjectKey, "");
             topicPartitionSegmentParser.getNextRecord(1L, TimeUnit.SECONDS);
         } catch (Exception e) {
             Assert.assertTrue(e instanceof ExecutionException);
@@ -145,7 +152,8 @@ public class TopicPartitionSegmentParserTest {
     @Test
     public void givenClosedStreamThrowIoException() throws IOException {
         InputStream nullInputStream = InputStream.nullInputStream();
-        TopicPartitionSegmentParser topicPartitionSegmentParser = new TopicPartitionSegmentParser(nullInputStream, s3ObjectKey, "");
+        TopicPartitionSegmentParser topicPartitionSegmentParser = new TopicPartitionSegmentParser(nullInputStream,
+                s3ObjectKey, "");
         nullInputStream.close();
         try {
             topicPartitionSegmentParser.getNextRecord(5L, TimeUnit.SECONDS);
@@ -157,7 +165,8 @@ public class TopicPartitionSegmentParserTest {
 
     @Test
     public void givenBadFormatS3ObjectKeyThrowException() {
-        Assert.expectThrows(IllegalArgumentException.class, () -> new TopicPartitionSegmentParser(new DataInputStream(System.in), "bla", ""));
+        Assert.expectThrows(IllegalArgumentException.class,
+                () -> new TopicPartitionSegmentParser(new DataInputStream(System.in), "bla", ""));
     }
 
 }
