@@ -37,7 +37,6 @@ public class TopicPartitionSegmentParserTest {
         Assert.assertEquals(sourceRecord.sourceOffset().get(LAST_READ_OFFSET), 2L);
         Assert.assertEquals((byte[]) sourceRecord.key(), key);
         Assert.assertEquals((byte[]) sourceRecord.value(), value);
-        Assert.assertEquals(sourceRecord.timestamp(), record.timestamp());
     }
 
     @Test
@@ -61,7 +60,6 @@ public class TopicPartitionSegmentParserTest {
         Assert.assertEquals(sourceRecord.sourceOffset().get(LAST_READ_OFFSET), 2L);
         Assert.assertEquals((byte[]) sourceRecord.key(), key);
         Assert.assertEquals((byte[]) sourceRecord.value(), value);
-        Assert.assertEquals(sourceRecord.timestamp(), record.timestamp());
     }
 
     @Test
@@ -85,7 +83,6 @@ public class TopicPartitionSegmentParserTest {
         Assert.assertEquals(sourceRecord.sourceOffset().get(LAST_READ_OFFSET), 2L);
         Assert.assertEquals((byte[]) sourceRecord.key(), key);
         Assert.assertEquals((byte[]) sourceRecord.value(), value);
-        Assert.assertEquals(sourceRecord.timestamp(), record.timestamp());
     }
 
     @Test
@@ -112,21 +109,16 @@ public class TopicPartitionSegmentParserTest {
         Assert.assertEquals(firstSourceRecord.sourceOffset().get(LAST_READ_OFFSET), 2L);
         Assert.assertNull(firstSourceRecord.key());
         Assert.assertNull(firstSourceRecord.value());
-        Assert.assertEquals(firstSourceRecord.timestamp(), record1.timestamp());
-
 
         SourceRecord secondSourceRecord = topicPartitionSegmentParser.getNextRecord(5L, TimeUnit.SECONDS);
         Assert.assertEquals(secondSourceRecord.sourceOffset().get(LAST_READ_OFFSET), 3L);
         Assert.assertNull(firstSourceRecord.key());
         Assert.assertNull(firstSourceRecord.value());
-        Assert.assertEquals(secondSourceRecord.timestamp(), record2.timestamp());
-
 
         SourceRecord thirdSourceRecord = topicPartitionSegmentParser.getNextRecord(1L, TimeUnit.SECONDS);
         Assert.assertEquals(thirdSourceRecord.sourceOffset().get(LAST_READ_OFFSET), 4L);
         Assert.assertEquals((byte[]) thirdSourceRecord.key(), key);
         Assert.assertEquals((byte[]) thirdSourceRecord.value(), value);
-        Assert.assertEquals(thirdSourceRecord.timestamp(), record3.timestamp());
     }
 
     @Test

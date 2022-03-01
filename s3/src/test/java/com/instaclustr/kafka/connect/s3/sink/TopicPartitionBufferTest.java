@@ -32,7 +32,7 @@ public class TopicPartitionBufferTest {
 
     @Test
     public void putRecordOnce() throws IOException, RecordOutOfOrderException, MaxBufferSizeExceededException {
-        TopicPartitionBuffer topicPartitionBuffer = new TopicPartitionBuffer(TOPIC, 0, 57);
+        TopicPartitionBuffer topicPartitionBuffer = new TopicPartitionBuffer(TOPIC, 0, 50);
         byte[] key = KEY_JSON.getBytes();
         byte[] value = VALUE_JSON.getBytes();
         SinkRecord record = new SinkRecord(TOPIC, 0, Schema.OPTIONAL_BYTES_SCHEMA, key, Schema.OPTIONAL_BYTES_SCHEMA, value, 2, 64L, TimestampType.NO_TIMESTAMP_TYPE);
@@ -40,7 +40,6 @@ public class TopicPartitionBufferTest {
         byte[] expected = new byte[]{'{'
                 , '"', 'k', '"', ':', '"', '{', '\\', '"', 'x', '\\', '"', ':', '\\', '"', '1', '1', '\\', '"', '}', '"', ','
                 , '"', 'v', '"', ':', '"', '{', '\\', '"', 'y', '\\', '"', ':', '\\', '"', '2', '2', '\\', '"', '}', '"', ','
-                , '"', 't', '"', ':', '6', '4', ','
                 , '"', 'o', '"', ':', '2'
                 , '}'
                 , '\n'
@@ -54,7 +53,7 @@ public class TopicPartitionBufferTest {
 
     @Test
     public void putRecordTwice() throws IOException, RecordOutOfOrderException, MaxBufferSizeExceededException {
-        TopicPartitionBuffer topicPartitionBuffer = new TopicPartitionBuffer(TOPIC, 0, 114);
+        TopicPartitionBuffer topicPartitionBuffer = new TopicPartitionBuffer(TOPIC, 0, 100);
         byte[] key = KEY_JSON.getBytes();
         byte[] value = VALUE_JSON.getBytes();
         SinkRecord record1 = new SinkRecord(TOPIC, 0, Schema.OPTIONAL_BYTES_SCHEMA, key, Schema.OPTIONAL_BYTES_SCHEMA, value, 2, 64L, TimestampType.NO_TIMESTAMP_TYPE);
@@ -63,21 +62,19 @@ public class TopicPartitionBufferTest {
         byte[] expected = new byte[]{'{'
                 , '"', 'k', '"', ':', '"', '{', '\\', '"', 'x', '\\', '"', ':', '\\', '"', '1', '1', '\\', '"', '}', '"', ','
                 , '"', 'v', '"', ':', '"', '{', '\\', '"', 'y', '\\', '"', ':', '\\', '"', '2', '2', '\\', '"', '}', '"', ','
-                , '"', 't', '"', ':', '6', '4', ','
                 , '"', 'o', '"', ':', '2'
                 , '}'
                 , '\n'
                 , '{'
                 , '"', 'k', '"', ':', '"', '{', '\\', '"', 'x', '\\', '"', ':', '\\', '"', '1', '1', '\\', '"', '}', '"', ','
                 , '"', 'v', '"', ':', '"', '{', '\\', '"', 'y', '\\', '"', ':', '\\', '"', '2', '2', '\\', '"', '}', '"', ','
-                , '"', 't', '"', ':', '6', '8', ','
                 , '"', 'o', '"', ':', '3'
                 , '}'
                 , '\n'
         };
 
         topicPartitionBuffer.putRecord(record1);
-        Assert.assertEquals(topicPartitionBuffer.getInputStreamLength(), 57);
+        Assert.assertEquals(topicPartitionBuffer.getInputStreamLength(), 50);
         topicPartitionBuffer.putRecord(record2);
         Assert.assertEquals(topicPartitionBuffer.getInputStreamLength(), expected.length);
         byte[] byteResult = topicPartitionBuffer.getInputStream().readNBytes(topicPartitionBuffer.getInputStreamLength());
@@ -86,7 +83,7 @@ public class TopicPartitionBufferTest {
 
     @Test
     public void putRecordThrice() throws IOException, RecordOutOfOrderException, MaxBufferSizeExceededException {
-        TopicPartitionBuffer topicPartitionBuffer = new TopicPartitionBuffer(TOPIC, 0, 114);
+        TopicPartitionBuffer topicPartitionBuffer = new TopicPartitionBuffer(TOPIC, 0, 100);
         byte[] key = KEY_JSON.getBytes();
         byte[] value = VALUE_JSON.getBytes();
         SinkRecord record1 = new SinkRecord(TOPIC, 0, Schema.OPTIONAL_BYTES_SCHEMA, key, Schema.OPTIONAL_BYTES_SCHEMA, value, 2, 64L, TimestampType.NO_TIMESTAMP_TYPE);
@@ -96,21 +93,19 @@ public class TopicPartitionBufferTest {
         byte[] expected = new byte[]{'{'
                 , '"', 'k', '"', ':', '"', '{', '\\', '"', 'x', '\\', '"', ':', '\\', '"', '1', '1', '\\', '"', '}', '"', ','
                 , '"', 'v', '"', ':', '"', '{', '\\', '"', 'y', '\\', '"', ':', '\\', '"', '2', '2', '\\', '"', '}', '"', ','
-                , '"', 't', '"', ':', '6', '4', ','
                 , '"', 'o', '"', ':', '2'
                 , '}'
                 , '\n'
                 , '{'
                 , '"', 'k', '"', ':', '"', '{', '\\', '"', 'x', '\\', '"', ':', '\\', '"', '1', '1', '\\', '"', '}', '"', ','
                 , '"', 'v', '"', ':', '"', '{', '\\', '"', 'y', '\\', '"', ':', '\\', '"', '2', '2', '\\', '"', '}', '"', ','
-                , '"', 't', '"', ':', '6', '8', ','
                 , '"', 'o', '"', ':', '3'
                 , '}'
                 , '\n'
         };
 
         topicPartitionBuffer.putRecord(record1);
-        Assert.assertEquals(topicPartitionBuffer.getInputStreamLength(), 57);
+        Assert.assertEquals(topicPartitionBuffer.getInputStreamLength(), 50);
 
         topicPartitionBuffer.putRecord(record2);
         Assert.assertEquals(topicPartitionBuffer.getInputStreamLength(), expected.length);

@@ -30,7 +30,7 @@ public class RecordFormat0Test {
 
         SinkRecord toWrite = new SinkRecord("test_topic", 0, Schema.STRING_SCHEMA, key, Schema.STRING_SCHEMA, value, 5, 17L, TimestampType.NO_TIMESTAMP_TYPE);
 
-        int written = recordFormat.writeRecord(dataOutputStream, toWrite, 39);
+        int written = recordFormat.writeRecord(dataOutputStream, toWrite, 32);
         byte[] output = bos.toByteArray();
 
         Assert.assertEquals(output.length, written);
@@ -38,7 +38,6 @@ public class RecordFormat0Test {
         byte[] expectedRecord = new byte[]{'{'
                 , '"', 'k', '"', ':', '"', '\\', '"', '1', '\\', '"', '"', ','
                 , '"', 'v', '"', ':', '"', '\\', '"', '2', '\\', '"', '"', ','
-                , '"', 't', '"', ':', '1', '7', ','
                 , '"', 'o', '"', ':', '5'
                 , '}'
                 , '\n'
@@ -66,12 +65,11 @@ public class RecordFormat0Test {
         byte[] value = "".getBytes();
         SinkRecord toWrite = new SinkRecord("test_topic", 0, Schema.STRING_SCHEMA, key, Schema.STRING_SCHEMA, value, 5, 17L, TimestampType.NO_TIMESTAMP_TYPE);
 
-        int written = recordFormat.writeRecord(dataOutputStream, toWrite, 33);
-
+        int written = recordFormat.writeRecord(dataOutputStream, toWrite, 26);
         byte[] output = bos.toByteArray();
         Assert.assertEquals(output.length, written);
 
-        byte[] expectedRecord = "{\"k\":null,\"v\":null,\"t\":17,\"o\":5}\n".getBytes();
+        byte[] expectedRecord = "{\"k\":null,\"v\":null,\"o\":5}\n".getBytes();
         Assert.assertEquals(output, expectedRecord);
     }
 
@@ -79,13 +77,11 @@ public class RecordFormat0Test {
     public void writeNullsTest() throws IOException, MaxBufferSizeExceededException {
         SinkRecord toWrite = new SinkRecord("test_topic", 0, Schema.STRING_SCHEMA, null, Schema.STRING_SCHEMA, null, 4, 16L, TimestampType.NO_TIMESTAMP_TYPE);
 
-        int written = recordFormat.writeRecord(dataOutputStream, toWrite, 33);
-
+        int written = recordFormat.writeRecord(dataOutputStream, toWrite, 26);
         byte[] output = bos.toByteArray();
-
         Assert.assertEquals(output.length, written);
 
-        byte[] expectedRecord = "{\"k\":null,\"v\":null,\"t\":16,\"o\":4}\n".getBytes();
+        byte[] expectedRecord = "{\"k\":null,\"v\":null,\"o\":4}\n".getBytes();
         Assert.assertEquals(output, expectedRecord);
     }
 }

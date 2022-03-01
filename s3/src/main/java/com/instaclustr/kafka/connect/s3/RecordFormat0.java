@@ -35,7 +35,7 @@ public class RecordFormat0 implements RecordFormat {
         String keyData = (record.key() == null || isEmpty(record.key())) ? null : (asUTF8String((byte[]) record.key()));
         String valueData = (record.value() == null || isEmpty(record.value())) ? null : (asUTF8String((byte[]) record.value()));
 
-        byte[] writableRecord = constructJson(new Record(keyData, valueData, record.timestamp(), record.kafkaOffset())).getBytes(StandardCharsets.UTF_8);
+        byte[] writableRecord = constructJson(new Record(keyData, valueData, record.kafkaOffset())).getBytes(StandardCharsets.UTF_8);
         int nextChunkSize = writableRecord.length + lineSeparatorBytes.length;
 
         if (nextChunkSize > sizeLimit) {
@@ -57,11 +57,10 @@ public class RecordFormat0 implements RecordFormat {
 
             byte[] key = (jsonObject.get("k").isJsonNull()) ? null : readAsObjectOrString(jsonObject, "k").getBytes(StandardCharsets.UTF_8);
             byte[] value = (jsonObject.get("v").isJsonNull()) ? null : readAsObjectOrString(jsonObject, "v").getBytes(StandardCharsets.UTF_8);
-            long timestamp = jsonObject.get("t").getAsLong();
             long offset = jsonObject.get("o").getAsLong();
 
             sourceOffset.put("lastReadOffset", offset);
-            return new SourceRecord(sourcePartition, sourceOffset, topic, partition, Schema.BYTES_SCHEMA, key, Schema.BYTES_SCHEMA, value, timestamp);
+            return new SourceRecord(sourcePartition, sourceOffset, topic, partition, Schema.BYTES_SCHEMA, key, Schema.BYTES_SCHEMA, value);
         } catch (JsonSyntaxException | ClassCastException | IllegalStateException e) {
             logger.error("Did not receive a json object " + jsonRow);
             throw new JsonSerializationException("Did not receive a json object " + jsonRow);
