@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class TransferManagerProvider {
     private TransferManager transferManager;

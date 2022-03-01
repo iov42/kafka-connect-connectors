@@ -4,10 +4,8 @@ import com.instaclustr.kafka.connect.s3.sink.MaxBufferSizeExceededException;
 import org.apache.kafka.connect.sink.SinkRecord;
 import org.apache.kafka.connect.source.SourceRecord;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Map;
 
 /**
