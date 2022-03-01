@@ -29,10 +29,11 @@ public class RecordFormat0 implements RecordFormat {
     public RecordFormat0() {
     }
 
+
     @Override
     public int writeRecord(final DataOutputStream dataOutputStream, final SinkRecord record, int sizeLimit) throws MaxBufferSizeExceededException, IOException {
-        String keyData = (record.key() == null || Arrays.equals(((byte[]) record.key()), "".getBytes())) ? null : (asUTF8String((byte[]) record.key()));
-        String valueData = (record.value() == null || Arrays.equals(((byte[]) record.value()), "".getBytes())) ? null : (asUTF8String((byte[]) record.value()));
+        String keyData = (record.key() == null || isEmpty(record.key())) ? null : (asUTF8String((byte[]) record.key()));
+        String valueData = (record.value() == null || isEmpty(record.value())) ? null : (asUTF8String((byte[]) record.value()));
 
         byte[] writableRecord = constructJson(new Record(keyData, valueData, record.timestamp(), record.kafkaOffset())).getBytes(StandardCharsets.UTF_8);
         int nextChunkSize = writableRecord.length + lineSeparatorBytes.length;
@@ -84,5 +85,9 @@ public class RecordFormat0 implements RecordFormat {
 
     private String asUTF8String(byte[] ba) {
         return new String(ba, StandardCharsets.UTF_8);
+    }
+
+    private boolean isEmpty(Object o) {
+        return Arrays.equals(((byte[]) o), "".getBytes());
     }
 }
