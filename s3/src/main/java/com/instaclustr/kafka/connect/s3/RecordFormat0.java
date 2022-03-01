@@ -21,7 +21,7 @@ import java.util.Map;
 
 public class RecordFormat0 implements RecordFormat {
     private static Logger logger = LoggerFactory.getLogger(RecordFormat0.class);
-    private Gson gson = (new GsonBuilder()).serializeNulls().setLenient().create();
+    private Gson gson = (new GsonBuilder()).serializeNulls().create();
     private JsonParser jsonParser = new JsonParser();
 
     private byte[] lineSeparatorBytes = System.lineSeparator().getBytes(StandardCharsets.UTF_8);
