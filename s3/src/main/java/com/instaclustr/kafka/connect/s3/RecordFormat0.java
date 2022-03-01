@@ -1,13 +1,14 @@
 package com.instaclustr.kafka.connect.s3;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.instaclustr.kafka.connect.s3.sink.MaxBufferSizeExceededException;
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.sink.SinkRecord;
 import org.apache.kafka.connect.source.SourceRecord;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonObject;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.GsonBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,21 +54,16 @@ public class RecordFormat0 implements RecordFormat {
         try {
             JsonObject jsonObject = jsonParser.parse(jsonRow).getAsJsonObject();
 
-            if (jsonObject.isJsonObject()) {
-                byte[] key = (jsonObject.get("k").isJsonNull()) ? null : readAsObjectOrString(jsonObject, "k").getBytes(StandardCharsets.UTF_8);
-                byte[] value = (jsonObject.get("v").isJsonNull()) ? null : readAsObjectOrString(jsonObject, "v").getBytes(StandardCharsets.UTF_8);
-                long timestamp = jsonObject.get("t").getAsLong();
-                long offset = jsonObject.get("o").getAsLong();
+            byte[] key = (jsonObject.get("k").isJsonNull()) ? null : readAsObjectOrString(jsonObject, "k").getBytes(StandardCharsets.UTF_8);
+            byte[] value = (jsonObject.get("v").isJsonNull()) ? null : readAsObjectOrString(jsonObject, "v").getBytes(StandardCharsets.UTF_8);
+            long timestamp = jsonObject.get("t").getAsLong();
+            long offset = jsonObject.get("o").getAsLong();
 
-                sourceOffset.put("lastReadOffset", offset);
-                return new SourceRecord(sourcePartition, sourceOffset, topic, partition, Schema.BYTES_SCHEMA, key, Schema.BYTES_SCHEMA, value, timestamp);
-            } else {
-                logger.error("Did not receive a json object " + jsonRow);
-                throw new IOException("Did not receive a json object " + jsonRow);
-            }
-        } catch (Exception e) {
-            logger.error("Could not construct Source Record, reason: " + e.getMessage());
-            throw new IOException("Could not construct Source Record, reason: " + e.getMessage());
+            sourceOffset.put("lastReadOffset", offset);
+            return new SourceRecord(sourcePartition, sourceOffset, topic, partition, Schema.BYTES_SCHEMA, key, Schema.BYTES_SCHEMA, value, timestamp);
+        } catch (JsonSyntaxException | ClassCastException | IllegalStateException e) {
+            logger.error("Did not receive a json object " + jsonRow);
+            throw new JsonSerializationException("Did not receive a json object " + jsonRow);
         }
     }
 
@@ -75,6 +71,9 @@ public class RecordFormat0 implements RecordFormat {
         return gson.toJson(record);
     }
 
+    // We need to distinguish if the key or the value of the record is a Json String or a Json value
+    // Json Strings should be parsed as "\"key\"" and
+    // Json values should be parsed as "{\"value\":\"1\"}"
     private String readAsObjectOrString(JsonObject jsonObject, String memberName) {
         try {
             return jsonObject.getAsJsonObject(memberName).toString();

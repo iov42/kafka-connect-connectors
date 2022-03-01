@@ -17,7 +17,7 @@ public class TopicPartitionSegmentParserTest {
     String s3ObjectKey = "prefix/test/0/0000000000000000002-0000000000000000004.txt";
 
     @Test
-    public void serDesIsWorkingForWeirdCharacters() throws Exception{
+    public void serDesIsWorkingForSymbols() throws Exception{
         TopicPartitionBuffer topicPartitionBuffer = new TopicPartitionBuffer("test", 0);
         byte[] key = "\"££:::::£`£\"".getBytes();
         byte[] value = "\"\n&\t&&&$مُنَاقَشَةُ سُبُلِ اِسَّْطْبِيقَاتُ الْحاسُوبِيَّة\"".getBytes();
